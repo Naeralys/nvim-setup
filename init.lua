@@ -36,13 +36,17 @@ require("lazy").setup({
 				}
 				require("onedark").load()
 			end
-	}, {
+	}, 
+		{
+		"hrsh7th/nvim-cmp",
+		},
+		{
 			"neovim/nvim-lspconfig",
 			dependencies= {
 				{
 					"hrsh7th/cmp-nvim-lsp"
 				}
-			}
+			},
 	},{
 		"mason-org/mason.nvim",
     		opts = {}
@@ -57,12 +61,13 @@ require("lazy").setup({
     		},
 	},
 		{
-"hrsh6th/nvim-cmp",
-		},
-		{
     'nvim-telescope/telescope.nvim', tag = 'v0.1.9',
      dependencies = { 'nvim-lua/plenary.nvim' }
     },
+		{
+			"nvim-telescope/telescope-file-browser.nvim",
+			dependencies = { "nvim-telescope/telescope.nvim", "nvim-lua/plenary.nvim" }
+		},
 		{
   		"nvim-treesitter/nvim-treesitter",
   		build = ":TSUpdate",
@@ -92,6 +97,11 @@ require("lazy").setup({
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>p', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>f', builtin.live_grep, { desc = 'Telescope live grep' })
+
+-- Telescope File Browser
+vim.keymap.set('n', '<leader>o', ":Telescope file_browser<CR>")
+
+vim.diagnostic.config({ virtual_text = true })
 
 -- Set theme
 vim.cmd("colorscheme onedark")
