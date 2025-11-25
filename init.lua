@@ -18,15 +18,32 @@ vim.opt.rtp:prepend(lazypath)
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
 vim.g.mapleader = " "
-vim.g.maplocalleader = "\\"
+vim.g.maplocalleader = " "
+
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
 
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
 	{
-	  	"olimorris/onedarkpro.nvim",
+	  	"navarasu/onedark.nvim",
   		priority = 1000, -- Ensure it loads first
+			config = function()
+				require("onedark").setup {
+					style = "dark",
+					transparent = true
+				}
+				require("onedark").load()
+			end
 	}, {
+			"neovim/nvim-lspconfig",
+			dependencies= {
+				{
+					"hrsh7th/cmp-nvim-lsp"
+				}
+			}
+	},{
 		"mason-org/mason.nvim",
     		opts = {}
 	},
@@ -38,7 +55,30 @@ require("lazy").setup({
 			"mason-org/mason.nvim", opts = {} },
         		"neovim/nvim-lspconfig",
     		},
-	}
+	},
+		{
+"hrsh6th/nvim-cmp",
+		},
+		{
+    'nvim-telescope/telescope.nvim', tag = 'v0.1.9',
+     dependencies = { 'nvim-lua/plenary.nvim' }
+    },
+		{
+  		"nvim-treesitter/nvim-treesitter",
+  		build = ":TSUpdate",
+  		config = function()
+    		local configs = require("nvim-treesitter.configs")
+ 
+    		configs.setup({
+      		ensure_installed = {
+        		"c", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript"
+      		},
+      		sync_install = false,
+      		highlight = { enable = true },
+      		indent = { enable = true },
+    		})
+  		end
+		}
 	  -- add your plugins here 
   },
   -- Configure any other settings here. See the documentation for more details.
@@ -48,4 +88,10 @@ require("lazy").setup({
   checker = { enabled = true },
 })
 
+-- Setup telescope
+local builtin = require('telescope.builtin')
+vim.keymap.set('n', '<leader>p', builtin.find_files, { desc = 'Telescope find files' })
+vim.keymap.set('n', '<leader>f', builtin.live_grep, { desc = 'Telescope live grep' })
+
+-- Set theme
 vim.cmd("colorscheme onedark")
