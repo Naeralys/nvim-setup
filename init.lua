@@ -26,19 +26,49 @@ vim.opt.shiftwidth = 2
 -- Setup lazy.nvim
 require("lazy").setup({
   spec = {
-	{
+		{
 	  	"navarasu/onedark.nvim",
   		priority = 1000, -- Ensure it loads first
 			config = function()
 				require("onedark").setup {
-					style = "dark",
+					style = "cool",
 					transparent = true
 				}
 				require("onedark").load()
 			end
-	}, 
+		}, 
 		{
-		"hrsh7th/nvim-cmp",
+			"hrsh7th/nvim-cmp",
+			config = function()
+				local cmp = require("cmp")
+				cmp.setup({
+					sources = {
+						{ name = "nvim_lsp" }
+					},
+					
+					mapping = cmp.mapping.preset.insert({
+						-- Navigate between completion items
+						['<C-p>'] = cmp.mapping.select_prev_item({ behavior = 'select' }),
+						['<C-n>'] = cmp.mapping.select_next_item({ behavior = 'select' }),
+
+						-- "Enter" key to confirm completion
+						['<CR>'] = cmp.mapping.confirm({ select = false }),
+						
+						-- CTRL+Space to trigger completion menu
+						['<C-Space>'] = cmp.mapping.complete(),
+		
+						-- Scroll up and down in the completion documentation
+						['<C-u>'] = cmp.mapping.scroll_docs(-4),
+						['<C-d>'] = cmp.mapping.scroll_docs(4),
+					}),
+					
+					snippet = {
+						expand = function(args)
+							vim.snippet.expand(args.body)
+						end,
+					}
+				})
+			end,
 		},
 		{
 			"neovim/nvim-lspconfig",
@@ -47,22 +77,42 @@ require("lazy").setup({
 					"hrsh7th/cmp-nvim-lsp"
 				}
 			},
-	},{
-		"mason-org/mason.nvim",
-    		opts = {}
-	},
-	{
-    		"mason-org/mason-lspconfig.nvim",
-    		opts = {},
-    		dependencies = {
-        	{ 
-			"mason-org/mason.nvim", opts = {} },
-        		"neovim/nvim-lspconfig",
-    		},
-	},
+		},{
+			"mason-org/mason.nvim",
+    	dependencies = {
+				"williamboman/mason-lspconfig.nvim",
+			},
+			config = function()
+				require("mason").setup()
+				require("mason-lspconfig").setup({
+					
+					-- LSP PACKAGES, LOOK HERE IF YOU MISS A LANGUAGE LSP
+					ensure_installed = {
+						"bashls",
+						"eslint",
+						"jsonls",
+						"lua_ls",
+						"pyright",
+						"ts_ls",
+						"clangd"
+					},
+					automatic_installation = true,
+				})
+			end
+		},
 		{
-    'nvim-telescope/telescope.nvim', tag = 'v0.1.9',
-     dependencies = { 'nvim-lua/plenary.nvim' }
+    	"mason-org/mason-lspconfig.nvim",
+    	opts = {},
+    	dependencies = {
+      	{ 
+					"mason-org/mason.nvim", opts = {} 
+				},
+        "neovim/nvim-lspconfig",
+    	},
+		},
+		{
+    	'nvim-telescope/telescope.nvim', tag = 'v0.1.9',
+     	dependencies = { 'nvim-lua/plenary.nvim' }
     },
 		{
 			"nvim-telescope/telescope-file-browser.nvim",
@@ -76,7 +126,7 @@ require("lazy").setup({
  
     		configs.setup({
       		ensure_installed = {
-        		"c", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript"
+        		"c", "rust", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript"
       		},
       		sync_install = false,
       		highlight = { enable = true },
@@ -102,6 +152,25 @@ vim.keymap.set('n', '<leader>f', builtin.live_grep, { desc = 'Telescope live gre
 vim.keymap.set('n', '<leader>o', ":Telescope file_browser<CR>")
 
 vim.diagnostic.config({ virtual_text = true })
+
+-- LSP enable typescript
+vim.lsp.config.typescript = {
+	cmd = { "typescript-language-server", "--stdio" },
+	filetypes = { "javascript", "typescript", "typescriptreact", "javascriptreact" },
+	root_markers = { "tsconfig.json", "package.json", "jsconfig.json", ".git" },
+	settings = {
+		typescript = {
+			inlayHints = inlayHints,
+		},
+		javascript = {
+			inlayHints = inlayHints
+		}
+	}
+}
+
+vim.lsp.enable("typescript")
+vim.lsp.enable("c")
+vim.lsp.enable("rust")
 
 -- Set theme
 vim.cmd("colorscheme onedark")
