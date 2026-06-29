@@ -87,29 +87,13 @@ require("lazy").setup({
           "hrsh7th/cmp-nvim-lsp"
         }
       },
-    }, {
-    "mason-org/mason.nvim",
-    dependencies = {
-      "williamboman/mason-lspconfig.nvim",
     },
-    config = function()
-      require("mason").setup()
-      require("mason-lspconfig").setup({
-
-        -- LSP PACKAGES, LOOK HERE IF YOU MISS A LANGUAGE LSP
-        ensure_installed = {
-          "bashls",
-          "eslint",
-          "jsonls",
-          "lua_ls",
-          "pyright",
-          "ts_ls",
-          "clangd"
-        },
-        automatic_installation = true,
-      })
-    end
-  },
+    {
+      "mason-org/mason.nvim",
+      config = function()
+        require("mason").setup()
+      end
+    },
     {
       "mason-org/mason-lspconfig.nvim",
       opts = {},
