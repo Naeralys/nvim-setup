@@ -183,6 +183,9 @@ vim.keymap.set('n', '<leader>gb', ":Gitsigns blame<CR>")
 
 vim.diagnostic.config({ virtual_text = true })
 
+-- Hover
+vim.keymap.set('n', '<leader>gh', vim.lsp.buf.hover)
+
 -- LSP enable typescript
 vim.lsp.config.typescript = {
   cmd = { "typescript-language-server", "--stdio" },
