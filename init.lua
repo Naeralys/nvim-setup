@@ -42,7 +42,24 @@ require("lazy").setup({
       config = function()
         require("onedark").setup {
           style = "cool",
-          transparent = true
+          transparent = true,
+          code_style = {
+            comments = "italic",
+            keywords = "none",
+            functions = "none",
+            strings = "none",
+            variables = "none",
+          },
+          colors = {
+            fg = "#c8d3e8",
+            light_grey = "#bcc7dd",
+          },
+          highlights = {
+            Comment = { fg = "#546178", fmt = "italic" },
+            LineNr = { fg = "#546178" },
+            CursorLineNr = { fg = "#bcc7dd", fmt = "bold" },
+            Visual = { bg = "#343e4f", fg = "#dfe6f2" },
+          },
         }
         require("onedark").load()
       end
@@ -81,14 +98,6 @@ require("lazy").setup({
       end,
     },
     {
-      "neovim/nvim-lspconfig",
-      dependencies = {
-        {
-          "hrsh7th/cmp-nvim-lsp"
-        }
-      },
-    },
-    {
       "mason-org/mason.nvim",
       config = function()
         require("mason").setup()
@@ -96,12 +105,13 @@ require("lazy").setup({
     },
     {
       "mason-org/mason-lspconfig.nvim",
-      opts = {},
-      dependencies = {
-        {
-          "mason-org/mason.nvim", opts = {}
-        },
-        "neovim/nvim-lspconfig",
+      opts = {
+        ensure_installed = { "ts_ls", "clangd", "rust_analyzer" },
+        automatic_enable = true,
+      },
+      dependencies = { 
+        "mason-org/mason.nvim",
+        "neovim/nvim-lspconfig"
       },
     },
     {
@@ -115,17 +125,11 @@ require("lazy").setup({
     },
     {
       "nvim-treesitter/nvim-treesitter",
+      lazy = false,
       build = ":TSUpdate",
       config = function()
-        local configs = require("nvim-treesitter.configs")
-
-        configs.setup({
-          ensure_installed = {
-            "c", "rust", "lua", "vim", "vimdoc", "elixir", "javascript", "html", "python", "typescript"
-          },
-          sync_install = false,
-          highlight = { enable = true },
-          indent = { enable = true },
+        require("nvim-treesitter").install({
+          "rust", "elixir", "javascript", "html", "python", "typescript"
         })
       end
     },
@@ -173,7 +177,7 @@ require("lazy").setup({
 local builtin = require('telescope.builtin')
 vim.keymap.set('n', '<leader>p', builtin.find_files, { desc = 'Telescope find files' })
 vim.keymap.set('n', '<leader>f', builtin.live_grep, { desc = 'Telescope live grep' })
-vim.keymap.set('n', '<leader>gd', builtin.lsp_implementations, { desc = 'Telescope go to implementation' })
+vim.keymap.set('n', '<leader>gd', builtin.lsp_definitions, { desc = 'Telescope go to implementation' })
 
 -- Telescope File Browser
 vim.keymap.set('n', '<leader>o', ":Telescope file_browser<CR>")
